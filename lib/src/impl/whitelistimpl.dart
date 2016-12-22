@@ -2,19 +2,26 @@
 // All rights reserved. Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-import 'package:htmlwhitelist/src/api/cleaner.dart';
+import 'package:html/dom.dart';
 import 'package:htmlwhitelist/src/api/typedefs.dart';
 import 'package:htmlwhitelist/src/api/whitelist.dart';
-import 'package:htmlwhitelist/src/impl/cleanerimpl.dart';
+import 'package:htmlwhitelist/src/impl/cleaner.dart';
 import 'package:htmlwhitelist/src/impl/extra.dart';
 import 'package:htmlwhitelist/src/impl/attribute.dart';
 
-class WhitelistImpl extends Whitelist {
-  Matcher _tags = noMatcher;
-  Iterable<Attribute> _attributes = const [];
-  Iterable<Extra> _extra = const [];
+class WhitelistImpl implements Whitelist {
+  static final AttributeGenerator noOp = (t, a, g) {};
+  static final Matcher noMatcher = (t) => false;
 
-  WhitelistImpl();
+  static final Whitelist none =
+      new WhitelistImpl._(noMatcher, const [], const []);
+
+  Matcher _tags;
+  Iterable<Attribute> _attributes;
+  Iterable<Extra> _extra;
+  Cleaner _cleaner;
+
+  WhitelistImpl._(this._tags, this._attributes, this._extra);
 
   @override
   Whitelist tags(dynamic tags) => _copy.._tags = _matchers(tags, _tags);
@@ -30,7 +37,10 @@ class WhitelistImpl extends Whitelist {
       ..add(new Extra(_matchers(tags), generator ?? noOp)));
 
   @override
-  Cleaner cleaner() => new CleanerImpl(_tags, _attributes, _extra);
+  DocumentFragment safeCopy(Node node) {
+    if (_cleaner == null) _cleaner = new Cleaner(_tags, _attributes, _extra);
+    return _cleaner.safeCopy(node);
+  }
 
   Matcher _matchers(dynamic matchers, [Matcher previous]) {
     if (matchers is Matcher) {
@@ -40,7 +50,7 @@ class WhitelistImpl extends Whitelist {
       return _listMatcher([previous, (t) => t == matchers]);
     }
     var collected = [previous];
-    if (matchers is List) {
+    if (matchers is Iterable) {
       var strings = [];
       for (var matcher in matchers) {
         if (matcher is String) {
@@ -49,7 +59,7 @@ class WhitelistImpl extends Whitelist {
           collected.add(matcher);
         } else {
           throw new ArgumentError(
-              "unsupported type list ${matchers.runtimeType}");
+              "unsupported type in iterable: ${matchers.runtimeType}");
         }
       }
       if (strings.isNotEmpty) {
@@ -71,9 +81,6 @@ class WhitelistImpl extends Whitelist {
   }
 
   WhitelistImpl get _copy {
-    return new WhitelistImpl()
-      .._tags = _tags
-      .._attributes = _attributes
-      .._extra = _extra;
+    return new WhitelistImpl._(_tags, _attributes, _extra);
   }
 }

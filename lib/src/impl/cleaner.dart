@@ -3,19 +3,17 @@
 // license that can be found in the LICENSE file.
 
 import 'package:html/dom.dart';
-import 'package:htmlwhitelist/src/api/cleaner.dart';
 import 'package:htmlwhitelist/src/api/typedefs.dart';
 import 'package:htmlwhitelist/src/impl/extra.dart';
 import 'package:htmlwhitelist/src/impl/attribute.dart';
 
-class CleanerImpl extends Cleaner {
+class Cleaner {
   final Matcher _tags;
   final Iterable<Attribute> _attributes;
   final Iterable<Extra> _extra;
 
-  CleanerImpl(this._tags, this._attributes, this._extra);
+  Cleaner(this._tags, this._attributes, this._extra);
 
-  @override
   DocumentFragment safeCopy(Node node) {
     var document = new Document();
     var safeCopy = document.createDocumentFragment();

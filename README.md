@@ -22,7 +22,7 @@ main() {
   var contents = '<b>See:</b> <a href="docs.html">the documentation</a>';
 
   DocumentFragment fragment = parseFragment(contents);
-  DocumentFragment safeCopy = Whitelist.simpleText.cleaner().safeCopy(fragment);
+  DocumentFragment safeCopy = Whitelist.simpleText.safeCopy(fragment);
 
   print(safeCopy.outerHtml);
 }

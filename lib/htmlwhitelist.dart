@@ -3,5 +3,4 @@
 // license that can be found in the LICENSE file.
 
 export 'package:htmlwhitelist/src/api/whitelist.dart';
-export 'package:htmlwhitelist/src/api/cleaner.dart';
 export 'package:htmlwhitelist/src/api/typedefs.dart';

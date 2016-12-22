@@ -20,18 +20,18 @@ void main() {
     });
 
     test('.none removes all tags', () {
-      expect(Whitelist.none.cleaner().safeCopy(fragment).outerHtml,
+      expect(Whitelist.none.safeCopy(fragment).outerHtml,
           'Titleboldand  italic removedjumplinkmore test');
     });
 
     test('.simpleText removes all complicated tags', () {
-      expect(Whitelist.simpleText.cleaner().safeCopy(fragment).outerHtml,
+      expect(Whitelist.simpleText.safeCopy(fragment).outerHtml,
           'Title<b>bold</b>and <i> italic </i>removedjumplinkmore test');
     });
 
     test('.basic removes all complicated tags', () {
       expect(
-          Whitelist.basic.cleaner().safeCopy(fragment).outerHtml,
+          Whitelist.basic.safeCopy(fragment).outerHtml,
           'Title<p><b>bold</b>and <i> italic </i><strike>removed</strike>'
           '<a href="#hi">jump</a><a href="http://google.com" rel="nofollow">'
           'link</a></p>more test');
