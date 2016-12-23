@@ -30,11 +30,8 @@ final Matcher anyAttribute = (a) => true;
 /// Always returns `true`.
 final Filter always = (t, a) => true;
 
-/// Returns an AttributeGenerator that generates the an attribute with the
+/// Returns an AttributeGenerator that generates an attribute with the
 /// given [name] and [value].
-///
-/// It only generates the attribute if [when] applies. If [when]
-/// is not provided, it will always generate the attribute.
 ///
 /// Example:
 ///
@@ -42,6 +39,4 @@ final Filter always = (t, a) => true;
 ///         .tags('a')
 ///         .extraAttributes('a', forceAttribute('target', '_blank'));
 AttributeGenerator forceAttribute(String name, String value, {Filter when}) =>
-    (t, a, g) {
-      if ((when ?? always)(t, a)) g(name, value);
-    };
+    ((t, a, g) => g(name, value));

@@ -32,9 +32,11 @@ class WhitelistImpl implements Whitelist {
       ..add(new Attribute(_matchers(tags), _matchers(attributes))));
 
   @override
-  Whitelist extraAttributes(dynamic tags, AttributeGenerator generator) => _copy
-    .._extra = (new List.from(_extra)
-      ..add(new Extra(_matchers(tags), generator ?? noOp)));
+  Whitelist extraAttributes(dynamic tags, AttributeGenerator generator,
+          {Filter when}) =>
+      _copy
+        .._extra = (new List.from(_extra)
+          ..add(new Extra(_matchers(tags), generator ?? noOp, when ?? always)));
 
   @override
   DocumentFragment safeCopy(Node node) {

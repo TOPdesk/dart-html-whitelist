@@ -60,12 +60,10 @@ abstract class Whitelist {
       ])
       .attributes(['blockquote', 'q'], 'cite')
       .attributes('a', 'href')
-      .extraAttributes(
-          'a',
-          forceAttribute('rel', 'nofollow', when: (t, a) {
-            var href = a['href'];
-            return href != null && !href.startsWith('#');
-          }));
+      .extraAttributes('a', forceAttribute('rel', 'nofollow'), when: (t, a) {
+        var href = a['href'];
+        return href != null && !href.startsWith('#');
+      });
 
   /// Allow only basic text tags and the image tag.
   ///
@@ -110,7 +108,11 @@ abstract class Whitelist {
   ///
   /// For each tag that matches [tags], the [generator] will be invoked to
   /// generate new attributes if necessary.
-  Whitelist extraAttributes(dynamic tags, AttributeGenerator generator);
+  ///
+  /// If [when] is provided, the generator will only be invoked if [wnen]
+  /// applies.
+  Whitelist extraAttributes(dynamic tags, AttributeGenerator generator,
+      {Filter when});
 
   /// Returns a new DocumentFragment that contains a copy of the [node] after
   /// applying the rules of this Whitelist.
