@@ -3,7 +3,6 @@
 // license that can be found in the LICENSE file.
 
 import 'package:htmlwhitelist/htmlwhitelist.dart';
-import 'package:html/parser.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -35,56 +34,48 @@ void main() {
   group('Whitelist', () {
     group('.none', () {
       test('removes all tags', () {
-        var test = parseFragment(tooMuch);
-        expect(Whitelist.none.safeCopy(test).outerHtml, textContents);
+        expect(Whitelist.none.safeCopy(tooMuch), textContents);
       });
     });
 
     group('.simpleText', () {
       test('removes all illegal tags', () {
-        var test = parseFragment(tooMuch);
-        expect(Whitelist.simpleText.safeCopy(test).outerHtml,
-            simpleText + basicContents);
+        expect(
+            Whitelist.simpleText.safeCopy(tooMuch), simpleText + basicContents);
       });
     });
 
     group('.basic', () {
       test('removes all illegal tags', () {
-        var test = parseFragment(tooMuch);
-        expect(Whitelist.basic.safeCopy(test).outerHtml,
-            basic + basicWithImagesContents);
+        expect(
+            Whitelist.basic.safeCopy(tooMuch), basic + basicWithImagesContents);
       });
 
       test('blockquote allows cite attribute', () {
         var ok = '<blockquote cite="cite">blockquote</blockquote>';
-        var test = parseFragment(ok);
-        expect(Whitelist.basic.safeCopy(test).outerHtml, ok);
+        expect(Whitelist.basic.safeCopy(ok), ok);
       });
 
       test('q allows cite attribute', () {
         var ok = '<q cite="cite">q</q>';
-        var test = parseFragment(ok);
-        expect(Whitelist.basic.safeCopy(test).outerHtml, ok);
+        expect(Whitelist.basic.safeCopy(ok), ok);
       });
 
       test('a allows attribute `href`', () {
         var ok = '<a href="#href">a</a>';
-        var test = parseFragment(ok);
-        expect(Whitelist.basic.safeCopy(test).outerHtml, ok);
+        expect(Whitelist.basic.safeCopy(ok), ok);
       });
 
       test('a adds rel="nofollow" for non-fragment urls', () {
         var before = '<a href="https://example.com">Example</a>';
         var after = '<a href="https://example.com" rel="nofollow">Example</a>';
-        var test = parseFragment(before);
-        expect(Whitelist.basic.safeCopy(test).outerHtml, after);
+        expect(Whitelist.basic.safeCopy(before), after);
       });
     });
 
     group('.basicWithImages', () {
       test('removes all illegal tags', () {
-        var test = parseFragment(tooMuch);
-        expect(Whitelist.basicWithImages.safeCopy(test).outerHtml,
+        expect(Whitelist.basicWithImages.safeCopy(tooMuch),
             basicWithImages + tooMuchContents);
       });
 
@@ -93,8 +84,7 @@ void main() {
           '`height`, `src`, `title` and `width`', () {
         var ok = '<img src="https://example.com/favicon.ico" align="middle"'
             ' alt="Favicon" height="16" title="Example.com" width="16">';
-        var test = parseFragment(ok);
-        expect(Whitelist.basicWithImages.safeCopy(test).outerHtml, ok);
+        expect(Whitelist.basicWithImages.safeCopy(ok), ok);
       });
     });
 
@@ -115,14 +105,6 @@ void main() {
         Whitelist.none.tags(['foo', 'bar']);
       });
 
-      test('accepts Matchers in Iterable', () {
-        Whitelist.none.tags([(s) => true, (s) => false]);
-      });
-
-      test('accepts Strings and Matchers in Iterable', () {
-        Whitelist.none.tags([(s) => true, 'foo', (s) => false, 'bar']);
-      });
-
       test('rejects `null`', () {
         expect(() => Whitelist.none.tags(null), throwsArgumentError);
       });
@@ -135,8 +117,172 @@ void main() {
         expect(() => Whitelist.none.tags([null]), throwsArgumentError);
       });
 
+      test('rejects Matchers in Iterable', () {
+        expect(() => Whitelist.none.tags([(s) => true, (s) => false]),
+            throwsArgumentError);
+      });
+
       test('rejects other types in Iterable', () {
         expect(() => Whitelist.none.tags(['foo', 1]), throwsArgumentError);
+      });
+    });
+
+    group('.tags(dynamic tags, {Filter when})', () {
+      test('when: `null` means no filter', () {
+        expect(
+            Whitelist.none.tags(['a', 'b'],
+                when: null).safeCopy('<a>a</a><b>b</b><i>i</i>'),
+            '<a>a</a><b>b</b>i');
+      });
+      test('when: filter uses filter', () {
+        expect(
+            Whitelist.none
+                .tags(['a'], when: (t, a) => !a.containsKey('href')).safeCopy(
+                    '<a>a</a><a href="#">href</a>'),
+            '<a>a</a>href');
+      });
+      test('when: filter is only invoked if tag matches', () {
+        expect(
+            Whitelist.none.tags('a', when: (t, a) {
+              if (t == 'b') throw new AssertionError();
+              return true;
+            }).safeCopy('<a>foo</a><b>bar</b>'),
+            '<a>foo</a>bar');
+      });
+    });
+    group('.attributes(dynamic tags, dynamic attributes)', () {
+      var before = '<a id="a" href="foo">a</a><b id="b">b</b>';
+      var base = Whitelist.none.tags(anyTag);
+
+      test('copies a single attribute for single tag', () {
+        expect(base.attributes('a', 'href').safeCopy(before),
+            '<a href="foo">a</a><b>b</b>');
+      });
+      test('copies a single attribute for all tags', () {
+        expect(base.attributes(anyTag, 'id').safeCopy(before),
+            '<a id="a">a</a><b id="b">b</b>');
+      });
+      test('copies all attributes for a single tag', () {
+        expect(base.attributes('a', anyAttribute).safeCopy(before),
+            '<a id="a" href="foo">a</a><b>b</b>');
+      });
+      test('copies all attributes for all tags', () {
+        expect(base.attributes(anyTag, anyAttribute).safeCopy(before), before);
+      });
+    });
+    group('.attributes(dynamic tags, dynamic attributes, {Filter when})', () {
+      test('when: `null` means no filter', () {
+        expect(
+            Whitelist.none
+                .tags(anyTag)
+                .attributes('a', 'href', when: null)
+                .safeCopy('<a href="foo">a</a>'),
+            '<a href="foo">a</a>');
+      });
+      test('when: filter uses filter', () {
+        expect(
+            Whitelist.none
+                .tags(anyTag)
+                .attributes('a', 'href',
+                    when: (t, a) => a['href'].startsWith('f'))
+                .safeCopy('<a href="foo">foo</a><a href="#">hash</a>'),
+            '<a href="foo">foo</a><a>hash</a>');
+      });
+      test('when: filter is only invoked if tag matches', () {
+        expect(
+            Whitelist.none.tags(anyTag).attributes('a', anyAttribute,
+                when: (t, a) {
+              if (t == 'b') throw new AssertionError();
+              return true;
+            }).safeCopy('<a href="foo">foo</a><b href="bar">bar</b>'),
+            '<a href="foo">foo</a><b>bar</b>');
+      });
+      test('when: filter is only invoked if attributes matches', () {
+        expect(
+            Whitelist.none
+                .tags(anyTag)
+                .attributes(anyTag, 'href',
+                    when: (t, a) => a['href'].startsWith('f'))
+                .safeCopy('<a href="foo">foo</a><a class="bar">bar</a>'),
+            '<a href="foo">foo</a><a>bar</a>');
+      });
+    });
+    group('.extraAttributes(dynamic tags, AttributeGenerator generator)', () {
+      test('generates an attribute for a single tag', () {
+        expect(
+            Whitelist.none
+                .tags(['a', 'b'])
+                .extraAttributes('a', (t, a, g) => g('target', '_blank'))
+                .safeCopy('<a>a</a><b>b</b>'),
+            '<a target="_blank">a</a><b>b</b>');
+      });
+      test('generates multiple attributes for a single tag', () {
+        expect(
+            Whitelist.none.tags(['a', 'b']).extraAttributes('a', (t, a, g) {
+              g('target', '_blank');
+              g('class', 'foo');
+            }).safeCopy('<a>a</a><b>b</b>'),
+            '<a target="_blank" class="foo">a</a><b>b</b>');
+      });
+      test('generates an attribute for all tags', () {
+        expect(
+            Whitelist.none
+                .tags(['a', 'b'])
+                .extraAttributes(anyTag, (t, a, g) => g('class', 'foo'))
+                .safeCopy('<a>a</a><b>b</b>'),
+            '<a class="foo">a</a><b class="foo">b</b>');
+      });
+      test('overrides an existing attribute', () {
+        expect(
+            Whitelist.none
+                .tags(['a', 'b'])
+                .attributes(anyTag, 'target')
+                .extraAttributes('a', (t, a, g) => g('target', 'bar'))
+                .safeCopy('<a target="foo">a</a><b target="foo">b</b>'),
+            '<a target="bar">a</a><b target="foo">b</b>');
+      });
+      test('generator = `null` is accepted and does not generate anything', () {
+        expect(
+            Whitelist.none
+                .tags(['a', 'b'])
+                .extraAttributes('a', null)
+                .safeCopy('<a>a</a><b>b</b>'),
+            '<a>a</a><b>b</b>');
+      });
+    });
+    group(
+        '.extraAttributes(dynamic tags, AttributeGenerator generator,'
+        ' {Filter when})', () {
+      test('when: `null` means no filter', () {
+        expect(
+            Whitelist.none
+                .tags(anyTag)
+                .extraAttributes('a', (t, a, g) => g('target', 'bar'),
+                    when: null)
+                .safeCopy('<a>a</a>'),
+            '<a target="bar">a</a>');
+      });
+      test('when: filter uses filter', () {
+        expect(
+            Whitelist.none
+                .tags(anyTag)
+                .attributes(anyTag, anyAttribute)
+                .extraAttributes('a', (t, a, g) => g('target', 'bar'),
+                    when: (t, a) => !a.containsKey('target'))
+                .safeCopy('<a>a</a><a target="foo">b</a>'),
+            '<a target="bar">a</a><a target="foo">b</a>');
+      });
+      test('when: filter is only invoked if tag matches', () {
+        expect(
+            Whitelist.none
+                .tags(anyTag)
+                .attributes(anyTag, anyAttribute)
+                .extraAttributes('a', (t, a, g) => g('target', 'bar'),
+                    when: (t, a) {
+              if (t == 'b') throw new AssertionError();
+              return true;
+            }).safeCopy('<a>a</a><b>b</b>'),
+            '<a target="bar">a</a><b>b</b>');
       });
     });
   });

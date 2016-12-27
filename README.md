@@ -15,6 +15,24 @@ Usage
 
 ```Dart
 import 'package:htmlwhitelist/htmlwhitelist.dart';
+
+main() {
+  var contents = '<b>See:</b> <a href="docs.html">the documentation</a>';
+  var safe = Whitelist.simpleText.safeCopy(contents);
+  print(safe);
+}
+```
+
+prints
+
+```Shell
+<b>See:</b> the documentation
+```
+
+If you have a DocumentFragment instead of a String you can use the Cleaner instead:
+
+```Dart
+import 'package:htmlwhitelist/htmlwhitelist.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
 
@@ -22,7 +40,7 @@ main() {
   var contents = '<b>See:</b> <a href="docs.html">the documentation</a>';
 
   DocumentFragment fragment = parseFragment(contents);
-  DocumentFragment safeCopy = Whitelist.simpleText.safeCopy(fragment);
+  DocumentFragment safeCopy = Whitelist.simpleText.cleaner.safeCopy(fragment);
 
   print(safeCopy.outerHtml);
 }

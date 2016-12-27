@@ -2,21 +2,20 @@
 // All rights reserved. Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-import 'package:html/dom.dart';
-import 'package:htmlwhitelist/src/api/typedefs.dart';
-import 'package:htmlwhitelist/src/api/whitelist.dart';
-import 'package:htmlwhitelist/src/impl/cleaner.dart';
-import 'package:htmlwhitelist/src/impl/extra.dart';
+import 'package:html/parser.dart';
+import 'package:htmlwhitelist/htmlwhitelist.dart';
+import 'package:htmlwhitelist/src/impl/cleanerimpl.dart';
 import 'package:htmlwhitelist/src/impl/attribute.dart';
+import 'package:htmlwhitelist/src/impl/extra.dart';
+import 'package:htmlwhitelist/src/impl/tag.dart';
 
 class WhitelistImpl implements Whitelist {
-  static final AttributeGenerator noOp = (t, a, g) {};
-  static final Matcher noMatcher = (t) => false;
+  static final AttributeGenerator _noOp = (t, a, g) {};
 
   static final Whitelist none =
-      new WhitelistImpl._(noMatcher, const [], const []);
+      new WhitelistImpl._(const [], const [], const []);
 
-  Matcher _tags;
+  Iterable<Tag> _tags;
   Iterable<Attribute> _attributes;
   Iterable<Extra> _extra;
   Cleaner _cleaner;
@@ -24,62 +23,55 @@ class WhitelistImpl implements Whitelist {
   WhitelistImpl._(this._tags, this._attributes, this._extra);
 
   @override
-  Whitelist tags(dynamic tags) => _copy.._tags = _matchers(tags, _tags);
+  Whitelist tags(dynamic tags, {Filter when}) => _copy
+    .._tags =
+        (new List.from(_tags)..add(new Tag(_toMatcher(tags), when ?? always)));
 
   @override
-  Whitelist attributes(dynamic tags, dynamic attributes) => _copy
+  Whitelist attributes(dynamic tags, dynamic attributes, {Filter when}) => _copy
     .._attributes = (new List.from(_attributes)
-      ..add(new Attribute(_matchers(tags), _matchers(attributes))));
+      ..add(new Attribute(
+          _toMatcher(tags), _toMatcher(attributes), when ?? always)));
 
   @override
   Whitelist extraAttributes(dynamic tags, AttributeGenerator generator,
           {Filter when}) =>
       _copy
         .._extra = (new List.from(_extra)
-          ..add(new Extra(_matchers(tags), generator ?? noOp, when ?? always)));
+          ..add(
+              new Extra(_toMatcher(tags), generator ?? _noOp, when ?? always)));
 
   @override
-  DocumentFragment safeCopy(Node node) {
-    if (_cleaner == null) _cleaner = new Cleaner(_tags, _attributes, _extra);
-    return _cleaner.safeCopy(node);
+  String safeCopy(String contents) {
+    return cleaner.safeCopy(parseFragment(contents)).outerHtml;
   }
 
-  Matcher _matchers(dynamic matchers, [Matcher previous]) {
-    if (matchers is Matcher) {
-      return _listMatcher([previous, matchers]);
+  @override
+  Cleaner get cleaner {
+    if (_cleaner == null) {
+      _cleaner = new CleanerImpl(_tags, _attributes, _extra);
     }
-    if (matchers is String) {
-      return _listMatcher([previous, (t) => t == matchers]);
+    return _cleaner;
+  }
+
+  Matcher _toMatcher(dynamic matcher) {
+    if (matcher is Matcher) {
+      return matcher;
     }
-    var collected = [previous];
-    if (matchers is Iterable) {
-      var strings = [];
-      for (var matcher in matchers) {
-        if (matcher is String) {
-          strings.add(matcher);
-        } else if (matcher is Matcher) {
-          collected.add(matcher);
-        } else {
+    if (matcher is String) {
+      return (s) => matcher == s;
+    }
+    if (matcher is Iterable) {
+      var copy = new List.from(matcher);
+      copy.forEach((s) {
+        if (s is! String) {
           throw new ArgumentError(
-              "unsupported type in iterable: ${matchers.runtimeType}");
+              "unsupported type in iterable: ${s.runtimeType}");
         }
-      }
-      if (strings.isNotEmpty) {
-        collected.add(strings.contains);
-      }
-      return _listMatcher(collected);
+      });
+      return copy.contains;
     }
-    throw new ArgumentError("unsupported type ${tags.runtimeType}");
-  }
-
-  Matcher _listMatcher(Iterable<Matcher> matchers) {
-    var list = new List.from(matchers);
-    list.remove(null);
-    list.remove(noMatcher);
-    if (list.isEmpty) {
-      return noMatcher;
-    }
-    return (String tag) => list.any((m) => m(tag));
+    throw new ArgumentError("unsupported type ${matcher.runtimeType}");
   }
 
   WhitelistImpl get _copy {

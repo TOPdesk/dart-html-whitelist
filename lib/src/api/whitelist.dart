@@ -2,10 +2,11 @@
 // All rights reserved. Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-import 'package:html/dom.dart';
-import 'package:htmlwhitelist/src/api/typedefs.dart';
+import 'package:htmlwhitelist/htmlwhitelist.dart';
 import 'package:htmlwhitelist/src/impl/whitelistimpl.dart';
 
+/// Defines the rules for what tags, attribute names and attribute values
+/// are allowed in a piece of HTML.
 abstract class Whitelist {
   /// No tags allowed, only text nodes.
   static final Whitelist none = WhitelistImpl.none;
@@ -17,7 +18,7 @@ abstract class Whitelist {
   static final Whitelist simpleText =
       none.tags(['b', 'em', 'i', 'strong', 'u']);
 
-  /// Allow only basic tags.
+  /// Allow only basic text tags.
   ///
   /// The following tags are allowed: `a`, `b`, `blockquote`, `br`,
   /// `cite`, `code`, `em`, `dd`, `dl`, `dt`, `i`, `kbd`, `li`, `ol`, `p`,
@@ -82,39 +83,50 @@ abstract class Whitelist {
   ///
   /// The [tags] can be one of the following types:
   ///
-  /// - a [String] containing a tag name;
-  /// - a [Matcher];
-  /// - an [Iterable] that contains Strings or Matchers.
-  Whitelist tags(dynamic tags);
+  /// - [String] containing a tag name;
+  /// - [Iterable<String>] containing tag names;
+  /// - [Matcher].
+  ///
+  /// If [when] is provided, the tag will only be allowed if [when]
+  /// applies. Only if [tags] matches will [when] be invoked.
+  Whitelist tags(dynamic tags, {Filter when});
 
   /// Creates a new Whitelist with additional allowed [attributes] for the
-  /// given [tags].
+  /// given [tags] that will be copied from the source.
   ///
   /// The [tags] and [attributes] can be one of the following types:
   ///
-  /// - a [String] containing a tag name;
-  /// - a [Matcher];
-  /// - an [Iterable] that contains Strings or Matchers.
-  Whitelist attributes(dynamic tags, dynamic attributes);
+  /// - [String] containing a tag name or attribute name;
+  /// - [Iterable<String>] containing tag names or attribute names;
+  /// - [Matcher].
+  ///
+  /// If [when] is provided, the attribute will only be copied if [when]
+  /// applies. Only if both [tags] and [attributes] match will
+  /// [when] be invoked.
+  Whitelist attributes(dynamic tags, dynamic attributes, {Filter when});
 
   /// Creates a new Whitelist with generated attributes for the
   /// given [tags].
   ///
   /// The [tags] can be one of the following types:
   ///
-  /// - a [String] containing a tag name;
-  /// - a [Matcher];
-  /// - an [Iterable] that contains Strings or Matchers.
+  /// - [String] containing a tag name;
+  /// - [Iterable<String>]  containing tag names;
+  /// - [Matcher].
   ///
   /// For each tag that matches [tags], the [generator] will be invoked to
   /// generate new attributes if necessary.
   ///
-  /// If [when] is provided, the generator will only be invoked if [wnen]
-  /// applies.
+  /// If [when] is provided, the generator will only be invoked if [when]
+  /// applies. Only if [tags] matches will [when] be invoked.
   Whitelist extraAttributes(dynamic tags, AttributeGenerator generator,
       {Filter when});
 
-  /// Returns a new DocumentFragment that contains a copy of the [node] after
+  /// Returns a safe copy of the [contents] after
   /// applying the rules of this Whitelist.
-  DocumentFragment safeCopy(Node node);
+  String safeCopy(String contents);
+
+  /// Returns a Cleaner that applies the rules of this Whitelist
+  /// on DocumentFragments
+  Cleaner get cleaner;
 }
