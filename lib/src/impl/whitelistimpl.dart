@@ -5,22 +5,19 @@
 import 'package:html/parser.dart';
 import 'package:htmlwhitelist/htmlwhitelist.dart';
 import 'package:htmlwhitelist/src/impl/cleanerimpl.dart';
-import 'package:htmlwhitelist/src/impl/attribute.dart';
 import 'package:htmlwhitelist/src/impl/extra.dart';
 import 'package:htmlwhitelist/src/impl/tag.dart';
 
 class WhitelistImpl implements Whitelist {
   static final AttributeGenerator _noOp = (t, a, g) {};
 
-  static final Whitelist none =
-      new WhitelistImpl._(const [], const [], const []);
+  static final Whitelist none = new WhitelistImpl._(const [], const []);
 
   Iterable<Tag> _tags;
-  Iterable<Attribute> _attributes;
   Iterable<Extra> _extra;
   Cleaner _cleaner;
 
-  WhitelistImpl._(this._tags, this._attributes, this._extra);
+  WhitelistImpl._(this._tags, this._extra);
 
   @override
   Whitelist tags(dynamic tags, {Filter when}) => _copy
@@ -28,10 +25,9 @@ class WhitelistImpl implements Whitelist {
         (new List.from(_tags)..add(new Tag(_toMatcher(tags), when ?? always)));
 
   @override
-  Whitelist attributes(dynamic tags, dynamic attributes, {Filter when}) => _copy
-    .._attributes = (new List.from(_attributes)
-      ..add(new Attribute(
-          _toMatcher(tags), _toMatcher(attributes), when ?? always)));
+  Whitelist attributes(dynamic tags, dynamic attributes, {Filter when}) =>
+      extraAttributes(
+          tags, _attributeCopier(_toMatcher(attributes), when ?? always));
 
   @override
   Whitelist extraAttributes(dynamic tags, AttributeGenerator generator,
@@ -49,7 +45,7 @@ class WhitelistImpl implements Whitelist {
   @override
   Cleaner get cleaner {
     if (_cleaner == null) {
-      _cleaner = new CleanerImpl(_tags, _attributes, _extra);
+      _cleaner = new CleanerImpl(_tags, _extra);
     }
     return _cleaner;
   }
@@ -74,7 +70,16 @@ class WhitelistImpl implements Whitelist {
     throw new ArgumentError("unsupported type ${matcher.runtimeType}");
   }
 
+  AttributeGenerator _attributeCopier(Matcher attributes, Filter when) =>
+      (String tag, Map<String, String> originalAttributes, AddAttribute adder) {
+        originalAttributes.forEach((k, v) {
+          if (attributes(k) && when(tag, originalAttributes)) {
+            adder(k, v);
+          }
+        });
+      };
+
   WhitelistImpl get _copy {
-    return new WhitelistImpl._(_tags, _attributes, _extra);
+    return new WhitelistImpl._(_tags, _extra);
   }
 }
