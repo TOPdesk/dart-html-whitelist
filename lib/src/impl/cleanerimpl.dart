@@ -4,14 +4,14 @@
 
 import 'package:html/dom.dart';
 import 'package:htmlwhitelist/htmlwhitelist.dart';
-import 'package:htmlwhitelist/src/impl/extra.dart';
+import 'package:htmlwhitelist/src/impl/attribute.dart';
 import 'package:htmlwhitelist/src/impl/tag.dart';
 
 class CleanerImpl implements Cleaner {
   final Iterable<Tag> _tags;
-  final Iterable<Extra> _extra;
+  final Iterable<Attribute> _attributes;
 
-  CleanerImpl(this._tags, this._extra);
+  CleanerImpl(this._tags, this._attributes);
 
   @override
   DocumentFragment safeCopy(Node node) {
@@ -45,10 +45,9 @@ class CleanerImpl implements Cleaner {
       Document document, String tag, Map<String, String> originalAttributes) {
     var copy = document.createElement(tag);
 
-    for (var extra in _extra) {
-      extra.generate(tag, originalAttributes,
-          (attribute, value) => copy.attributes[attribute] = value);
-    }
+    _attributes.forEach((a) => a.generate(tag, originalAttributes,
+        (attribute, value) => copy.attributes[attribute] = value));
+
     return copy;
   }
 }

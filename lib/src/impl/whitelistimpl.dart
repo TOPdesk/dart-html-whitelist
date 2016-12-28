@@ -5,7 +5,7 @@
 import 'package:html/parser.dart';
 import 'package:htmlwhitelist/htmlwhitelist.dart';
 import 'package:htmlwhitelist/src/impl/cleanerimpl.dart';
-import 'package:htmlwhitelist/src/impl/extra.dart';
+import 'package:htmlwhitelist/src/impl/attribute.dart';
 import 'package:htmlwhitelist/src/impl/tag.dart';
 
 class WhitelistImpl implements Whitelist {
@@ -14,10 +14,10 @@ class WhitelistImpl implements Whitelist {
   static final Whitelist none = new WhitelistImpl._(const [], const []);
 
   Iterable<Tag> _tags;
-  Iterable<Extra> _extra;
+  Iterable<Attribute> _attributes;
   Cleaner _cleaner;
 
-  WhitelistImpl._(this._tags, this._extra);
+  WhitelistImpl._(this._tags, this._attributes);
 
   @override
   Whitelist tags(dynamic tags, {Filter when}) => _copy
@@ -33,9 +33,9 @@ class WhitelistImpl implements Whitelist {
   Whitelist extraAttributes(dynamic tags, AttributeGenerator generator,
           {Filter when}) =>
       _copy
-        .._extra = (new List.from(_extra)
+        .._attributes = (new List.from(_attributes)
           ..add(
-              new Extra(_toMatcher(tags), generator ?? _noOp, when ?? always)));
+              new Attribute(_toMatcher(tags), generator ?? _noOp, when ?? always)));
 
   @override
   String safeCopy(String contents) {
@@ -45,7 +45,7 @@ class WhitelistImpl implements Whitelist {
   @override
   Cleaner get cleaner {
     if (_cleaner == null) {
-      _cleaner = new CleanerImpl(_tags, _extra);
+      _cleaner = new CleanerImpl(_tags, _attributes);
     }
     return _cleaner;
   }
@@ -80,6 +80,6 @@ class WhitelistImpl implements Whitelist {
       };
 
   WhitelistImpl get _copy {
-    return new WhitelistImpl._(_tags, _extra);
+    return new WhitelistImpl._(_tags, _attributes);
   }
 }
