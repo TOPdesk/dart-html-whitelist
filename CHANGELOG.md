@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Tweaks in implementation
+
 ## 0.2.0
 
 * Added documentation
