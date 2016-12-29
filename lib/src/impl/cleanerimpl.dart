@@ -2,14 +2,18 @@
 // All rights reserved. Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+import 'dart:collection';
+
 import 'package:html/dom.dart';
 import 'package:htmlwhitelist/htmlwhitelist.dart';
-import 'package:htmlwhitelist/src/impl/attribute.dart';
-import 'package:htmlwhitelist/src/impl/tag.dart';
+
+import 'attribute.dart';
+import 'collector.dart';
+import 'tag.dart';
 
 class CleanerImpl implements Cleaner {
-  final Iterable<Tag> _tags;
-  final Iterable<Attribute> _attributes;
+  final List<Tag> _tags;
+  final List<Attribute> _attributes;
 
   CleanerImpl(this._tags, this._attributes);
 
@@ -21,11 +25,12 @@ class CleanerImpl implements Cleaner {
     return safeCopy;
   }
 
-  _filter(Document document, Node target, Node source) {
+  void _filter(Document document, Node target, Node source) {
     for (var node in source.nodes) {
       if (node is Element) {
         var newTarget = target;
-        var originalAttributes = new Map.from(node.attributes);
+        var originalAttributes =
+            new Map.unmodifiable(new LinkedHashMap.from(node.attributes));
         var tag = node.localName;
         if (_tagAllowed(tag, originalAttributes)) {
           newTarget = _copy(document, tag, originalAttributes);
@@ -43,11 +48,10 @@ class CleanerImpl implements Cleaner {
 
   Element _copy(
       Document document, String tag, Map<String, String> originalAttributes) {
-    var copy = document.createElement(tag);
+    var collector = new Collector();
 
-    _attributes.forEach((a) => a.generate(tag, originalAttributes,
-        (attribute, value) => copy.attributes[attribute] = value));
+    _attributes.forEach((a) => a.generate(tag, originalAttributes, collector));
 
-    return copy;
+    return collector.fill(document.createElement(tag));
   }
 }

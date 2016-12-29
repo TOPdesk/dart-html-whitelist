@@ -3,7 +3,8 @@
 // license that can be found in the LICENSE file.
 
 import 'package:htmlwhitelist/htmlwhitelist.dart';
-import 'package:htmlwhitelist/src/impl/whitelistimpl.dart';
+
+import '../impl/whitelistimpl.dart';
 
 /// Defines the rules for what tags, attribute names and attribute values
 /// are allowed in a piece of HTML.
@@ -61,7 +62,7 @@ abstract class Whitelist {
       ])
       .attributes(['blockquote', 'q'], 'cite')
       .attributes('a', 'href')
-      .extraAttributes('a', forceAttribute('rel', 'nofollow'), when: (t, a) {
+      .extraAttributes('a', setAttribute('rel', 'nofollow'), when: (t, a) {
         var href = a['href'];
         return href != null && !href.startsWith('#');
       });

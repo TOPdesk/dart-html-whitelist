@@ -2,7 +2,7 @@
 // All rights reserved. Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-import 'package:htmlwhitelist/src/api/typedefs.dart';
+import 'package:htmlwhitelist/htmlwhitelist.dart';
 
 class Tag {
   final Matcher _matcher;

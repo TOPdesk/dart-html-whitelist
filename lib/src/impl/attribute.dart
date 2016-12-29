@@ -2,7 +2,7 @@
 // All rights reserved. Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-import 'package:htmlwhitelist/src/api/typedefs.dart';
+import 'package:htmlwhitelist/htmlwhitelist.dart';
 
 class Attribute {
   final Matcher _tags;
@@ -11,9 +11,10 @@ class Attribute {
 
   Attribute(this._tags, this._generator, this._when);
 
-  generate(String tag, Map<String, String> attributes, AddAttribute adder) {
+  void generate(String tag, Map<String, String> attributes,
+      AttributeCollector collector) {
     if (_tags(tag) && _when(tag, attributes)) {
-      _generator(tag, attributes, adder);
+      _generator(tag, attributes, collector);
     }
   }
 }

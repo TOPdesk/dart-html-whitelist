@@ -212,15 +212,15 @@ void main() {
         expect(
             Whitelist.none
                 .tags(['a', 'b'])
-                .extraAttributes('a', (t, a, g) => g('target', '_blank'))
+                .extraAttributes('a', (t, o, c) => c['target'] = '_blank')
                 .safeCopy('<a>a</a><b>b</b>'),
             '<a target="_blank">a</a><b>b</b>');
       });
       test('generates multiple attributes for a single tag', () {
         expect(
-            Whitelist.none.tags(['a', 'b']).extraAttributes('a', (t, a, g) {
-              g('target', '_blank');
-              g('class', 'foo');
+            Whitelist.none.tags(['a', 'b']).extraAttributes('a', (t, o, c) {
+              c['target'] = '_blank';
+              c['class'] = 'foo';
             }).safeCopy('<a>a</a><b>b</b>'),
             '<a target="_blank" class="foo">a</a><b>b</b>');
       });
@@ -228,7 +228,7 @@ void main() {
         expect(
             Whitelist.none
                 .tags(['a', 'b'])
-                .extraAttributes(anyTag, (t, a, g) => g('class', 'foo'))
+                .extraAttributes(anyTag, (t, o, c) => c['class'] = 'foo')
                 .safeCopy('<a>a</a><b>b</b>'),
             '<a class="foo">a</a><b class="foo">b</b>');
       });
@@ -237,7 +237,7 @@ void main() {
             Whitelist.none
                 .tags(['a', 'b'])
                 .attributes(anyTag, 'target')
-                .extraAttributes('a', (t, a, g) => g('target', 'bar'))
+                .extraAttributes('a', (t, o, c) => c['target'] = 'bar')
                 .safeCopy('<a target="foo">a</a><b target="foo">b</b>'),
             '<a target="bar">a</a><b target="foo">b</b>');
       });
@@ -249,6 +249,23 @@ void main() {
                 .safeCopy('<a>a</a><b>b</b>'),
             '<a>a</a><b>b</b>');
       });
+      test('generator cannot modify the originalAttributes', () {
+        expect(
+            () => Whitelist.none
+                .tags(['a'])
+                .extraAttributes('a', (t, o, c) => o['foo'] = 'foo')
+                .safeCopy('<a foo="bar">a</a>'),
+            throwsUnsupportedError);
+      });
+      test('the originalAttributes are in source order', () {
+        expect(
+            Whitelist.none
+                .tags(['a'])
+                .extraAttributes(
+                    anyTag, (t, o, c) => o.forEach((k, v) => c[k] = v))
+                .safeCopy('<a b="b" a="a" f="f" c="c" e="e" d="d"></a>'),
+            '<a b="b" a="a" f="f" c="c" e="e" d="d"></a>');
+      });
     });
     group(
         '.extraAttributes(dynamic tags, AttributeGenerator generator,'
@@ -257,7 +274,7 @@ void main() {
         expect(
             Whitelist.none
                 .tags(anyTag)
-                .extraAttributes('a', (t, a, g) => g('target', 'bar'),
+                .extraAttributes('a', (t, o, c) => c['target'] = 'bar',
                     when: null)
                 .safeCopy('<a>a</a>'),
             '<a target="bar">a</a>');
@@ -267,7 +284,7 @@ void main() {
             Whitelist.none
                 .tags(anyTag)
                 .attributes(anyTag, anyAttribute)
-                .extraAttributes('a', (t, a, g) => g('target', 'bar'),
+                .extraAttributes('a', (t, o, c) => c['target'] = 'bar',
                     when: (t, a) => !a.containsKey('target'))
                 .safeCopy('<a>a</a><a target="foo">b</a>'),
             '<a target="bar">a</a><a target="foo">b</a>');
@@ -277,7 +294,7 @@ void main() {
             Whitelist.none
                 .tags(anyTag)
                 .attributes(anyTag, anyAttribute)
-                .extraAttributes('a', (t, a, g) => g('target', 'bar'),
+                .extraAttributes('a', (t, o, c) => c['target'] = 'bar',
                     when: (t, a) {
               if (t == 'b') throw new AssertionError();
               return true;

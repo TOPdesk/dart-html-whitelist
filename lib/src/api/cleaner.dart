@@ -3,9 +3,13 @@
 // license that can be found in the LICENSE file.
 
 import 'package:html/dom.dart';
+import 'package:htmlwhitelist/htmlwhitelist.dart';
 
-/// Generates a [DocumentFragment] by applying the rules from the [Whitelist]
-/// that created this cleaner to the [Node] given.
+/// Generates a [DocumentFragment][1] by applying the rules from the [Whitelist]
+/// that created this cleaner to the [Node][2] given.
+///
+/// [1]: https://www.dartdocs.org/documentation/html/latest/dom/DocumentFragment-class.html
+/// [2]: https://www.dartdocs.org/documentation/html/latest/dom/Node-class.html
 abstract class Cleaner {
   Cleaner._();
 

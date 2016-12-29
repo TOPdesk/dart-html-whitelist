@@ -1,3 +1,9 @@
+## 0.3.0
+
+* Replaced `AddAttribute` by `AttributeCollector` for more flexibility in the generated attributes
+* Renamed `forceAttribute` to `setAttribute` to better reflect what it does
+* The `originalAttributes` are now in source order and unmodifiable
+
 ## 0.2.1
 
 * Tweaks in implementation
