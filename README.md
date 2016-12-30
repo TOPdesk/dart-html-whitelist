@@ -1,17 +1,16 @@
-Html Whitelist
-============
+# Html Whitelist
+
+[![Build Status](https://travis-ci.org/TOPdesk/dart-html-whitelist.svg?branch=master)](https://travis-ci.org/TOPdesk/dart-html-whitelist)
 
 * [Introduction](#introduction)
 * [Usage](#usage)
 * [License and contributors](#license-and-contributors)
 
-Introduction
-------------
+## Introduction
 
 This library can be used to whitelist html elements, attributes and attribute values.  
 
-Usage
-------------
+## Usage
 
 ```Dart
 import 'package:htmlwhitelist/htmlwhitelist.dart';
@@ -52,8 +51,7 @@ prints
 <b>See:</b> the documentation
 ```
 
-License and contributors
-------------------------
+## License and contributors
 
 * The MIT License, see [LICENSE](https://github.com/TOPdesk/dart-html-whitelist/raw/master/LICENSE).
 * For contributors, see [AUTHORS](https://github.com/TOPdesk/dart-html-whitelist/raw/master/AUTHORS).
