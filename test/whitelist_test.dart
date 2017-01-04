@@ -51,22 +51,61 @@ void main() {
             Whitelist.basic.safeCopy(tooMuch), basic + basicWithImagesContents);
       });
 
-      test('blockquote allows cite attribute', () {
-        var ok = '<blockquote cite="cite">blockquote</blockquote>';
+      test(
+          'blockquote copies `cite` for relative uris, '
+          'and the schemes `http` and `https`', () {
+        var ok = '<blockquote cite="cite">blockquote</blockquote>'
+            '<blockquote cite="http://example.com">blockquote</blockquote>'
+            '<blockquote cite="https://example.com">blockquote</blockquote>';
         expect(Whitelist.basic.safeCopy(ok), ok);
       });
 
-      test('q allows cite attribute', () {
-        var ok = '<q cite="cite">q</q>';
+      test('blockquote does not copy `cite` other schemes', () {
+        expect(
+            Whitelist.basic
+                .safeCopy('<blockquote cite="ftp://example.com"></blockquote>'
+                    '<blockquote cite="data:,"></blockquote>'
+                    '<blockquote cite="javascript:alert(12)"></blockquote>'),
+            '<blockquote></blockquote>'
+            '<blockquote></blockquote>'
+            '<blockquote></blockquote>');
+      });
+
+      test(
+          'q copies `cite` for relative uris, '
+          'and the schemes `http` and `https`', () {
+        var ok = '<q cite="cite">q</q>'
+            '<q cite="http://example.com">q</q>'
+            '<q cite="https://example.com">q</q>';
         expect(Whitelist.basic.safeCopy(ok), ok);
       });
 
-      test('a allows attribute `href`', () {
-        var ok = '<a href="#href">a</a>';
+      test('q does not copy `cite` other schemes', () {
+        expect(
+            Whitelist.basic.safeCopy('<q cite="ftp://example.com"></q>'
+                '<q cite="data:,"></q>'
+                '<q cite="javascript:alert(12)"></q>'),
+            '<q></q><q></q><q></q>');
+      });
+
+      test(
+          'a copies `href` for relative uris, '
+          'and the schemes `http` and `https`', () {
+        var ok = '<a href="#href">a</a>'
+            '<a href="http://example.com" rel="nofollow">a</a>'
+            '<a href="https://example.com" rel="nofollow">a</a>';
         expect(Whitelist.basic.safeCopy(ok), ok);
       });
 
-      test('a adds rel="nofollow" for non-fragment urls', () {
+      test('a does not `href` other schemes', () {
+        expect(
+            Whitelist.basic.safeCopy('<a href="ftp://example.com"></a>'
+                '<a href="data:,"></a>'
+                '<a href="javascript:alert(12)"></a>'),
+            '<a rel="nofollow"></a><a></a><a></a>');
+      });
+
+      test('a adds rel="nofollow" for external uris', () {
         var before = '<a href="https://example.com">Example</a>';
         var after = '<a href="https://example.com" rel="nofollow">Example</a>';
         expect(Whitelist.basic.safeCopy(before), after);
@@ -85,6 +124,23 @@ void main() {
         var ok = '<img src="https://example.com/favicon.ico" align="middle"'
             ' alt="Favicon" height="16" title="Example.com" width="16">';
         expect(Whitelist.basicWithImages.safeCopy(ok), ok);
+      });
+
+      test(
+          'img copies `src` for relative uris, '
+          'and the schemes `http`, `https` and `data`', () {
+        var ok = '<img src="http://example.com/favicon.ico">'
+            '<img src="https://example.com/favicon.ico">'
+            '<img src="data:,">'
+            '<img src="/foo">';
+        expect(Whitelist.basicWithImages.safeCopy(ok), ok);
+      });
+
+      test('img does not copy `src` for other schemes', () {
+        var test = '<img src="ftp://example.com/favicon.ico">'
+            '<img src="about:config">'
+            '<img src="javascript:alert(12)">';
+        expect(Whitelist.basicWithImages.safeCopy(test), '<img><img><img>');
       });
     });
 

@@ -5,4 +5,5 @@
 export 'package:htmlwhitelist/src/api/attributecollector.dart';
 export 'package:htmlwhitelist/src/api/cleaner.dart';
 export 'package:htmlwhitelist/src/api/typedefs.dart';
+export 'package:htmlwhitelist/src/api/uris.dart';
 export 'package:htmlwhitelist/src/api/whitelist.dart';

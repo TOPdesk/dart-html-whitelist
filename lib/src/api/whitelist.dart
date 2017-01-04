@@ -26,10 +26,14 @@ abstract class Whitelist {
   /// `pre`, `q`, `samp`, `small`, `span`, `strike`, `strong`, `sub`, `sup`,
   /// `u`, `ul` and `var`.
   ///
-  /// `blockquote` and `q` allow the `cite` attribute.
+  /// `blockquote` and `q` allow the `cite` attribute if it contains a valid
+  /// <i>uri</i> and its scheme is blank, `http` or `https`.
   ///
-  /// `a` allows the `href` attribute, and will add `rel="nofollow"` for
-  /// href values that do not start with a `#` symbol.
+  /// `a` allows the `href` attribute  if it contains a valid
+  /// <i>uri</i> and its scheme is blank, `http` or `https`.
+  ///
+  /// In `a` the attribute `rel="nofollow"` will be added for `href` values
+  /// that point to external pages. See [Uris.external] for more details.
   static final Whitelist basic = none
       .tags([
         'a',
@@ -60,12 +64,12 @@ abstract class Whitelist {
         'ul',
         'var',
       ])
-      .attributes(['blockquote', 'q'], 'cite')
-      .attributes('a', 'href')
-      .extraAttributes('a', setAttribute('rel', 'nofollow'), when: (t, a) {
-        var href = a['href'];
-        return href != null && !href.startsWith('#');
-      });
+      .attributes(['blockquote', 'q'], 'cite',
+          when: Uris.hasAllowedScheme('cite', ['http', 'https']))
+      .attributes('a', 'href',
+          when: Uris.hasAllowedScheme('href', ['http', 'https']))
+      .extraAttributes('a', setAttribute('rel', 'nofollow'),
+          when: Uris.external('href'));
 
   /// Allow only basic text tags and the image tag.
   ///
@@ -73,10 +77,16 @@ abstract class Whitelist {
   /// allowed.
   ///
   /// Allowed attributes for the `img` tag are: `align`, `alt`, `height`,
-  /// `src`, `title` and `width`.
+  /// `title` and `width`.
+  ///
+  /// `img` allows the `src` attribute  if it contains a valid
+  /// <i>uri</i> and its scheme is blank, `http`, `https` or `data`.
+
   static final Whitelist basicWithImages = basic
       .tags('img')
-      .attributes('img', ['align', 'alt', 'height', 'src', 'title', 'width']);
+      .attributes('img', 'src',
+          when: Uris.hasAllowedScheme('src', ['http', 'https', 'data']))
+      .attributes('img', ['align', 'alt', 'height', 'title', 'width']);
 
   Whitelist._();
 
