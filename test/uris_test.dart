@@ -81,7 +81,7 @@ void main() {
       });
     });
 
-    group('isValue(String uri)', () {
+    group('isValid(String uri)', () {
       test('returns true for valid uris', () {
         expect(Uris.isValid('http://example.com'), true);
         expect(Uris.isValid('data:,Hello'), true);

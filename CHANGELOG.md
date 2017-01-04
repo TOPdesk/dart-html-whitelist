@@ -1,3 +1,8 @@
+## 0.4.1
+
+* Added documentation to `Uris`
+* Tweaks in implementation
+
 ## 0.4.0
 
 * Added `Uris` class to contain various utility functions for inspecting and filtering uris
