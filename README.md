@@ -8,7 +8,10 @@
 
 ## Introduction
 
-This library can be used to whitelist html elements, attributes and attribute values.  
+This library can be used to whitelist html elements, attributes and attribute values.
+
+The main purpose is to process html from an untrusted source and make sure that if the html is rendered by your
+application it doesn't contain elements that are not safe.
 
 ## Usage
 
