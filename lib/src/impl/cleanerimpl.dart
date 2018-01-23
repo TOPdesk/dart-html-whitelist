@@ -45,7 +45,7 @@ class CleanerImpl implements Cleaner {
 
   Map<String, String> _toStringMap(Map<dynamic, String> original) {
     var result = new LinkedHashMap<String, String>();
-    original.forEach((dynamic k, v){
+    original.forEach((dynamic k, v) {
       result[k.toString()] = v;
     });
     return result;

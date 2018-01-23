@@ -174,7 +174,9 @@ void main() {
       });
 
       test('rejects Matchers in Iterable', () {
-        expect(() => Whitelist.none.tags([(dynamic s) => true, (dynamic s) => false]),
+        expect(
+            () => Whitelist.none
+                .tags([(dynamic s) => true, (dynamic s) => false]),
             throwsArgumentError);
       });
 

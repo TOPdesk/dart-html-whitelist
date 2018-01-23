@@ -78,7 +78,8 @@ class Uris {
   ///   with that allowed uri.
 
   static Filter external(String attribute, {Iterable<String> allowed}) {
-    var allowedUris = allowed == null ? const <String>[] : new List<String>.from(allowed);
+    var allowedUris =
+        allowed == null ? const <String>[] : new List<String>.from(allowed);
     return (t, o) {
       var uri = o[attribute];
       if (uri == null) return false;
