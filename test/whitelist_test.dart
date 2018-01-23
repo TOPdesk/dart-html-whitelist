@@ -150,11 +150,11 @@ void main() {
       });
 
       test('accepts Matcher', () {
-        Whitelist.none.tags((s) => false);
+        Whitelist.none.tags((dynamic s) => false);
       });
 
       test('accepts empty Iterable', () {
-        Whitelist.none.tags([]);
+        Whitelist.none.tags(<String>[]);
       });
 
       test('accepts Strings in Iterable', () {
@@ -174,7 +174,7 @@ void main() {
       });
 
       test('rejects Matchers in Iterable', () {
-        expect(() => Whitelist.none.tags([(s) => true, (s) => false]),
+        expect(() => Whitelist.none.tags([(dynamic s) => true, (dynamic s) => false]),
             throwsArgumentError);
       });
 

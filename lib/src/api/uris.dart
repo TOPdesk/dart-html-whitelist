@@ -52,7 +52,7 @@ class Uris {
   /// - that is a valid uri;
   /// - and the scheme of that uri is blank or listed in [schemes].
   static Filter hasAllowedScheme(String attribute, Iterable<String> schemes) {
-    var allowed = new List.from(schemes);
+    var allowed = new List<String>.from(schemes);
     return (t, o) {
       var uri = o[attribute];
       if (uri == null || !isValid(uri)) {
@@ -78,7 +78,7 @@ class Uris {
   ///   with that allowed uri.
 
   static Filter external(String attribute, {Iterable<String> allowed}) {
-    var allowedUris = allowed == null ? const [] : new List.from(allowed);
+    var allowedUris = allowed == null ? const <String>[] : new List<String>.from(allowed);
     return (t, o) {
       var uri = o[attribute];
       if (uri == null) return false;

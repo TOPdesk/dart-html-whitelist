@@ -53,7 +53,7 @@ class Collector implements AttributeCollector {
     return element;
   }
 
-  _checkNameAndValue(String name, String value) {
+  void _checkNameAndValue(String name, String value) {
     if (identical(name, null)) {
       throw new ArgumentError('null name');
     }

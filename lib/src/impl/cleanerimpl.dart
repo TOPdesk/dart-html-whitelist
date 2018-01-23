@@ -30,7 +30,7 @@ class CleanerImpl implements Cleaner {
       if (node is Element) {
         var newTarget = target;
         var originalAttributes =
-            new Map.unmodifiable(new LinkedHashMap.from(node.attributes));
+            new Map<String, String>.unmodifiable(_toStringMap(node.attributes));
         var tag = node.localName;
         if (_tagAllowed(tag, originalAttributes)) {
           newTarget = _copy(document, tag, originalAttributes);
@@ -41,6 +41,14 @@ class CleanerImpl implements Cleaner {
         target.append(new Text(node.text));
       }
     }
+  }
+
+  Map<String, String> _toStringMap(Map<dynamic, String> original) {
+    var result = new LinkedHashMap<String, String>();
+    original.forEach((dynamic k, v){
+      result[k.toString()] = v;
+    });
+    return result;
   }
 
   bool _tagAllowed(String tag, Map<String, String> attributes) =>

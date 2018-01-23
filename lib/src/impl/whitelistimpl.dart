@@ -60,8 +60,8 @@ class WhitelistImpl implements Whitelist {
       return (s) => matcher == s;
     }
     if (matcher is Iterable) {
-      var copy = new List.from(matcher);
-      copy.forEach((s) {
+      var copy = new List<dynamic>.from(matcher);
+      copy.forEach((dynamic s) {
         if (s is! String) {
           throw new ArgumentError(
               "unsupported type in iterable: ${s.runtimeType}");
