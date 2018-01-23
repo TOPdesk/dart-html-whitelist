@@ -1,6 +1,10 @@
+## 0.5.1
+
+* Added examples
+
 ## 0.5.0
 
-* introduce strong mode
+* Introduced strong mode
 
 ## 0.4.1
 
