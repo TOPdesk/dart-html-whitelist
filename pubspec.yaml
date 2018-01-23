@@ -4,9 +4,8 @@ version: 0.5.2-dev
 description: >
   This library can be used to clean up html on the server.
 
-  The main purpose is to process html from an untrusted source
-  and make sure that if the html is rendered by your
-  application it doesn't contain elements that are not safe.
+  The main purpose is to convert html from an untrusted source
+  to a version that's safe for rendering.
 
 authors:
 - Roel Spilker <r.spilker@gmail.com>
