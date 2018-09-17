@@ -1,5 +1,5 @@
 name: htmlwhitelist
-version: 0.5.2-dev
+version: 0.5.2
 
 description: >
   This library can be used to clean up html on the server.
@@ -14,7 +14,7 @@ homepage: https://github.com/topdesk/dart-html-whitelist
 documentation:
 
 environment:
-  sdk: '>=1.21.0 <2.0.0'
+  sdk: '>=1.21.0 <3.0.0'
 
 dependencies:
   html:  '^0.13.2+2'

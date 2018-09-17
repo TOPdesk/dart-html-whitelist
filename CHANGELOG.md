@@ -1,3 +1,7 @@
+## 0.5.2
+
+* Moving to Dart 2.0 compatibility
+
 ## 0.5.1
 
 * Added examples
