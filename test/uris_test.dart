@@ -217,7 +217,6 @@ void main() {
             Uris.external('href', allowed: ['http://example.com'])(
                 'a', {'href': 'http://foo.com'}),
             true);
-        print(Uri.parse('http://example.com').resolve('//foo'));
       });
 
       test('returns false for allowed attribute', () {

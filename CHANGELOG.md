@@ -1,3 +1,8 @@
+## 0.5.3
+
+* Update test dependency for Dart 2.0
+
+
 ## 0.5.2
 
 * Moving to Dart 2.0 compatibility
