@@ -1,5 +1,5 @@
 name: htmlwhitelist
-version: 0.5.3-dev
+version: 0.5.3
 
 description: >
   This library can be used to clean up html on the server.
