@@ -6,12 +6,12 @@ import 'package:htmlwhitelist/htmlwhitelist.dart';
 
 /// Contains some utility functions to inspect uris.
 class Uris {
+  Uris._();
+
   static final String _test1 = 'http://x.y/';
   static final String _test2 = 'ftp://y.x/';
   static final Uri _testUri1 = Uri.parse(_test1);
   static final Uri _testUri2 = Uri.parse(_test2);
-
-  Uris._();
 
   /// Returns `true` if [uri] contains a relative path.
   ///
@@ -77,7 +77,7 @@ class Uris {
   /// - when the uri is resolved from any of the [allowed] uris, its path starts
   ///   with that allowed uri.
 
-  static Filter external(String attribute, {Iterable<String> allowed}) {
+  static Filter external(String attribute, {Iterable<String>? allowed}) {
     var allowedUris =
         allowed == null ? const <String>[] : new List<String>.from(allowed);
     return (t, o) {

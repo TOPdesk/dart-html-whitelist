@@ -5,10 +5,10 @@
 import 'package:htmlwhitelist/htmlwhitelist.dart';
 
 class Tag {
+  Tag(this._matcher, this._when);
+
   final Matcher _matcher;
   final Filter _when;
-
-  Tag(this._matcher, this._when);
 
   bool allowed(String tag, Map<String, String> attributes) =>
       _matcher(tag) && _when(tag, attributes);

@@ -9,6 +9,8 @@ import '../impl/whitelistimpl.dart';
 /// Defines the rules for what tags, attribute names and attribute values
 /// are allowed in a piece of HTML.
 abstract class Whitelist {
+  Whitelist._();
+
   /// No tags allowed, only text nodes.
   static final Whitelist none = WhitelistImpl.none;
 
@@ -88,8 +90,6 @@ abstract class Whitelist {
           when: Uris.hasAllowedScheme('src', ['http', 'https', 'data']))
       .attributes('img', ['align', 'alt', 'height', 'title', 'width']);
 
-  Whitelist._();
-
   /// Creates a new Whitelist with additional allowed [tags].
   ///
   /// The [tags] can be one of the following types:
@@ -100,7 +100,7 @@ abstract class Whitelist {
   ///
   /// If [when] is provided, the tag will only be allowed if [when]
   /// applies. Only if [tags] matches will [when] be invoked.
-  Whitelist tags(dynamic tags, {Filter when});
+  Whitelist tags(dynamic tags, {Filter? when});
 
   /// Creates a new Whitelist with additional allowed [attributes] for the
   /// given [tags] that will be copied from the source.
@@ -114,7 +114,7 @@ abstract class Whitelist {
   /// If [when] is provided, the attribute will only be copied if [when]
   /// applies. Only if both [tags] and [attributes] match will
   /// [when] be invoked.
-  Whitelist attributes(dynamic tags, dynamic attributes, {Filter when});
+  Whitelist attributes(dynamic tags, dynamic attributes, {Filter? when});
 
   /// Creates a new Whitelist with generated attributes for the
   /// given [tags].
@@ -130,8 +130,8 @@ abstract class Whitelist {
   ///
   /// If [when] is provided, the generator will only be invoked if [when]
   /// applies. Only if [tags] matches will [when] be invoked.
-  Whitelist extraAttributes(dynamic tags, AttributeGenerator generator,
-      {Filter when});
+  Whitelist extraAttributes(dynamic tags, AttributeGenerator? generator,
+      {Filter? when});
 
   /// Returns a safe copy of the [contents] after
   /// applying the rules of this Whitelist.

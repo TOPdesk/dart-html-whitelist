@@ -12,10 +12,10 @@ import 'collector.dart';
 import 'tag.dart';
 
 class CleanerImpl implements Cleaner {
+  CleanerImpl(this._tags, this._attributes);
+
   final List<Tag> _tags;
   final List<Attribute> _attributes;
-
-  CleanerImpl(this._tags, this._attributes);
 
   @override
   DocumentFragment safeCopy(Node node) {
@@ -31,7 +31,7 @@ class CleanerImpl implements Cleaner {
         var newTarget = target;
         var originalAttributes =
             new Map<String, String>.unmodifiable(_toStringMap(node.attributes));
-        var tag = node.localName;
+        var tag = node.localName!;
         if (_tagAllowed(tag, originalAttributes)) {
           newTarget = _copy(document, tag, originalAttributes);
           target.append(newTarget);

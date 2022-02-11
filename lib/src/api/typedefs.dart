@@ -7,7 +7,7 @@ import 'package:htmlwhitelist/htmlwhitelist.dart';
 /// Returns `true` if the given [tag] and [attributes] are accepted.
 ///
 /// [attributes] contains all attribute names and values of the source tag.
-typedef bool Filter(String tag, Map<String, String> attributes);
+typedef bool Filter(String tag, Map<String, String?> attributes);
 
 /// Returns `true` if the given [name] matches.
 typedef bool Matcher(String name);

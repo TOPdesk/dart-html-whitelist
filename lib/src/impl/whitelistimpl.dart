@@ -10,29 +10,29 @@ import 'cleanerimpl.dart';
 import 'tag.dart';
 
 class WhitelistImpl implements Whitelist {
+  WhitelistImpl._(this._tags, this._attributes);
+
   static final AttributeGenerator _noOp = (t, a, g) {};
 
   static final Whitelist none = new WhitelistImpl._(const [], const []);
 
   final List<Tag> _tags;
   final List<Attribute> _attributes;
-  Cleaner _cleaner;
-
-  WhitelistImpl._(this._tags, this._attributes);
+  Cleaner? _cleaner;
 
   @override
-  Whitelist tags(dynamic tags, {Filter when}) => new WhitelistImpl._(
+  Whitelist tags(dynamic tags, {Filter? when}) => new WhitelistImpl._(
       (new List.from(_tags)..add(new Tag(_toMatcher(tags), when ?? always))),
       _attributes);
 
   @override
-  Whitelist attributes(dynamic tags, dynamic attributes, {Filter when}) =>
+  Whitelist attributes(dynamic tags, dynamic attributes, {Filter? when}) =>
       extraAttributes(
           tags, _attributeCopier(_toMatcher(attributes), when ?? always));
 
   @override
-  Whitelist extraAttributes(dynamic tags, AttributeGenerator generator,
-          {Filter when}) =>
+  Whitelist extraAttributes(dynamic tags, AttributeGenerator? generator,
+          {Filter? when}) =>
       new WhitelistImpl._(
           _tags,
           (new List.from(_attributes)
@@ -49,7 +49,7 @@ class WhitelistImpl implements Whitelist {
     if (_cleaner == null) {
       _cleaner = new CleanerImpl(_tags, _attributes);
     }
-    return _cleaner;
+    return _cleaner!;
   }
 
   Matcher _toMatcher(dynamic matcher) {

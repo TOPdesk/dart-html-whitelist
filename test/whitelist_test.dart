@@ -11,11 +11,11 @@ void main() {
 
   final basic = simpleText +
       ' <a href="#">a</a><blockquote>blockquote</blockquote><br>'
-      '<cite>cite</cite><code>code</code><dl><dt>dt</dt><dd>dd</dd></dl>'
-      '<kbd>kbd</kbd><ol><li>olli</li></ol><p>p</p><pre>pre</pre><q>q</q>'
-      '<samp>samp</samp><small>small</small><span>span</span>'
-      '<strike>strike</strike><sub>sub</sub><sup>sup</sup>'
-      '<ul><li>ulli</li></ul><var>var</var> ';
+          '<cite>cite</cite><code>code</code><dl><dt>dt</dt><dd>dd</dd></dl>'
+          '<kbd>kbd</kbd><ol><li>olli</li></ol><p>p</p><pre>pre</pre><q>q</q>'
+          '<samp>samp</samp><small>small</small><span>span</span>'
+          '<strike>strike</strike><sub>sub</sub><sup>sup</sup>'
+          '<ul><li>ulli</li></ul><var>var</var> ';
 
   final basicWithImages = basic + ' <img> ';
 
@@ -26,7 +26,7 @@ void main() {
   final basicWithImagesContents = '  ' + tooMuchContents;
 
   final basicContents = ' ablockquotecitecodedtddkbdollippreqsamp'
-      'smallspanstrikesubsupullivar ' +
+          'smallspanstrikesubsupullivar ' +
       basicWithImagesContents;
 
   final textContents = ' bemistrongu ' + basicContents;
@@ -242,7 +242,7 @@ void main() {
             Whitelist.none
                 .tags(anyTag)
                 .attributes('a', 'href',
-                    when: (t, a) => a['href'].startsWith('f'))
+                    when: (t, a) => a['href']!.startsWith('f'))
                 .safeCopy('<a href="foo">foo</a><a href="#">hash</a>'),
             '<a href="foo">foo</a><a>hash</a>');
       });
@@ -260,7 +260,7 @@ void main() {
             Whitelist.none
                 .tags(anyTag)
                 .attributes(anyTag, 'href',
-                    when: (t, a) => a['href'].startsWith('f'))
+                    when: (t, a) => a['href']!.startsWith('f'))
                 .safeCopy('<a href="foo">foo</a><a class="bar">bar</a>'),
             '<a href="foo">foo</a><a>bar</a>');
       });

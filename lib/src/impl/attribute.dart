@@ -5,11 +5,11 @@
 import 'package:htmlwhitelist/htmlwhitelist.dart';
 
 class Attribute {
+  Attribute(this._tags, this._generator, this._when);
+
   final Matcher _tags;
   final AttributeGenerator _generator;
   final Filter _when;
-
-  Attribute(this._tags, this._generator, this._when);
 
   void generate(String tag, Map<String, String> attributes,
       AttributeCollector collector) {

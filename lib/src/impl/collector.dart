@@ -21,7 +21,7 @@ class Collector implements AttributeCollector {
   }
 
   @override
-  void append(String name, String value, {String separator}) {
+  void append(String name, String value, {String? separator}) {
     _checkNameAndValue(name, value);
     var previous = _values[name];
     if (previous == null) {
@@ -32,7 +32,7 @@ class Collector implements AttributeCollector {
   }
 
   @override
-  void prepend(String name, String value, {String separator}) {
+  void prepend(String name, String value, {String? separator}) {
     _checkNameAndValue(name, value);
     var previous = _values[name];
     if (previous == null) {

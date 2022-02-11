@@ -33,14 +33,6 @@ void main() {
               ..['foo'] = 'foo'),
             '<x foo="foo"></x>');
       });
-
-      test('`null` name throws ArgumentError', () {
-        expect(() => a()[null] = 'bar', throwsArgumentError);
-      });
-
-      test('`null` value throws ArgumentError', () {
-        expect(() => a()['foo'] = null, throwsArgumentError);
-      });
     });
 
     group('ifAbsent(String name, String value)', () {
@@ -57,16 +49,11 @@ void main() {
       });
 
       test('works only once per attribute', () {
-        expect(string(a()..ifAbsent('foo', 'bar')..ifAbsent('foo', 'foo')),
+        expect(
+            string(a()
+              ..ifAbsent('foo', 'bar')
+              ..ifAbsent('foo', 'foo')),
             '<x foo="bar"></x>');
-      });
-
-      test('`null` name throws ArgumentError', () {
-        expect(() => a().ifAbsent(null, 'bar'), throwsArgumentError);
-      });
-
-      test('`null` value throws ArgumentError', () {
-        expect(() => a().ifAbsent('foo', null), throwsArgumentError);
       });
     });
 
@@ -90,14 +77,6 @@ void main() {
               ..append('foo', 'foo')
               ..append('foo', 'foo')),
             '<x foo="bar foo foo"></x>');
-      });
-
-      test('`null` name throws ArgumentError', () {
-        expect(() => a().append(null, 'bar'), throwsArgumentError);
-      });
-
-      test('`null` value throws ArgumentError', () {
-        expect(() => a().append('foo', null), throwsArgumentError);
       });
     });
 
@@ -145,14 +124,6 @@ void main() {
               ..prepend('foo', 'foo')),
             '<x foo="foo foo bar"></x>');
       });
-
-      test('`null` name throws ArgumentError', () {
-        expect(() => a().prepend(null, 'bar'), throwsArgumentError);
-      });
-
-      test('`null` value throws ArgumentError', () {
-        expect(() => a().prepend('foo', null), throwsArgumentError);
-      });
     });
 
     group('prepend(String name, String value, {String separator})', () {
@@ -198,10 +169,6 @@ void main() {
               ..['bar'] = 'foo'
               ..remove('bar')),
             '<x foo="bar"></x>');
-      });
-
-      test('`null` name throws ArgumentError', () {
-        expect(() => a().remove(null), throwsArgumentError);
       });
     });
 
