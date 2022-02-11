@@ -1,3 +1,8 @@
+## 1.0.0
+* null-safety
+* update dependency:
+  * html ^0.15.0
+
 ## 0.5.3
 
 * Update test dependency for Dart 2.0
