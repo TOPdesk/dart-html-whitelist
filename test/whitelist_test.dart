@@ -202,7 +202,7 @@ void main() {
       test('when: filter is only invoked if tag matches', () {
         expect(
             Whitelist.none.tags('a', when: (t, a) {
-              if (t == 'b') throw new AssertionError();
+              if (t == 'b') throw AssertionError();
               return true;
             }).safeCopy('<a>foo</a><b>bar</b>'),
             '<a>foo</a>bar');
@@ -250,7 +250,7 @@ void main() {
         expect(
             Whitelist.none.tags(anyTag).attributes('a', anyAttribute,
                 when: (t, a) {
-              if (t == 'b') throw new AssertionError();
+              if (t == 'b') throw AssertionError();
               return true;
             }).safeCopy('<a href="foo">foo</a><b href="bar">bar</b>'),
             '<a href="foo">foo</a><b>bar</b>');
@@ -354,7 +354,7 @@ void main() {
                 .attributes(anyTag, anyAttribute)
                 .extraAttributes('a', (t, o, c) => c['target'] = 'bar',
                     when: (t, a) {
-              if (t == 'b') throw new AssertionError();
+              if (t == 'b') throw AssertionError();
               return true;
             }).safeCopy('<a>a</a><b>b</b>'),
             '<a target="bar">a</a><b>b</b>');

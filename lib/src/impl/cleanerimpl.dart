@@ -19,7 +19,7 @@ class CleanerImpl implements Cleaner {
 
   @override
   DocumentFragment safeCopy(Node node) {
-    var document = new Document();
+    var document = Document();
     var safeCopy = document.createDocumentFragment();
     _filter(document, safeCopy, node);
     return safeCopy;
@@ -30,7 +30,7 @@ class CleanerImpl implements Cleaner {
       if (node is Element) {
         var newTarget = target;
         var originalAttributes =
-            new Map<String, String>.unmodifiable(_toStringMap(node.attributes));
+            Map<String, String>.unmodifiable(_toStringMap(node.attributes));
         var tag = node.localName!;
         if (_tagAllowed(tag, originalAttributes)) {
           newTarget = _copy(document, tag, originalAttributes);
@@ -38,13 +38,13 @@ class CleanerImpl implements Cleaner {
         }
         _filter(document, newTarget, node);
       } else if (node is Text) {
-        target.append(new Text(node.text));
+        target.append(Text(node.text));
       }
     }
   }
 
   Map<String, String> _toStringMap(Map<dynamic, String> original) {
-    var result = new LinkedHashMap<String, String>();
+    var result = <String, String>{};
     original.forEach((dynamic k, v) {
       result[k.toString()] = v;
     });
@@ -56,9 +56,11 @@ class CleanerImpl implements Cleaner {
 
   Element _copy(
       Document document, String tag, Map<String, String> originalAttributes) {
-    var collector = new Collector();
+    var collector = Collector();
 
-    _attributes.forEach((a) => a.generate(tag, originalAttributes, collector));
+    for (final a in _attributes) {
+      a.generate(tag, originalAttributes, collector);
+    }
 
     return collector.fill(document.createElement(tag));
   }

@@ -8,10 +8,10 @@ import 'package:test/test.dart';
 
 void main() {
   group('Collector', () {
-    Collector a() => new Collector();
+    Collector a() => Collector();
 
     String string(Collector a) =>
-        a.fill(new Document().createElement('x')).outerHtml;
+        a.fill(Document().createElement('x')).outerHtml;
 
     group('[]=(String name, String value)', () {
       test('sets a normal attribute', () {

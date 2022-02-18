@@ -12,17 +12,18 @@ import 'tag.dart';
 class WhitelistImpl implements Whitelist {
   WhitelistImpl._(this._tags, this._attributes);
 
-  static final AttributeGenerator _noOp = (t, a, g) {};
+  void _noOp(String tag, Map<String, String> originalAttributes,
+      AttributeCollector collector) {}
 
-  static final Whitelist none = new WhitelistImpl._(const [], const []);
+  static final Whitelist none = WhitelistImpl._(const [], const []);
 
   final List<Tag> _tags;
   final List<Attribute> _attributes;
   Cleaner? _cleaner;
 
   @override
-  Whitelist tags(dynamic tags, {Filter? when}) => new WhitelistImpl._(
-      (new List.from(_tags)..add(new Tag(_toMatcher(tags), when ?? always))),
+  Whitelist tags(dynamic tags, {Filter? when}) => WhitelistImpl._(
+      (List.from(_tags)..add(Tag(_toMatcher(tags), when ?? always))),
       _attributes);
 
   @override
@@ -33,10 +34,10 @@ class WhitelistImpl implements Whitelist {
   @override
   Whitelist extraAttributes(dynamic tags, AttributeGenerator? generator,
           {Filter? when}) =>
-      new WhitelistImpl._(
+      WhitelistImpl._(
           _tags,
-          (new List.from(_attributes)
-            ..add(new Attribute(
+          (List.from(_attributes)
+            ..add(Attribute(
                 _toMatcher(tags), generator ?? _noOp, when ?? always))));
 
   @override
@@ -46,10 +47,7 @@ class WhitelistImpl implements Whitelist {
 
   @override
   Cleaner get cleaner {
-    if (_cleaner == null) {
-      _cleaner = new CleanerImpl(_tags, _attributes);
-    }
-    return _cleaner!;
+    return _cleaner ??= CleanerImpl(_tags, _attributes);
   }
 
   Matcher _toMatcher(dynamic matcher) {
@@ -60,16 +58,15 @@ class WhitelistImpl implements Whitelist {
       return (s) => matcher == s;
     }
     if (matcher is Iterable) {
-      var copy = new List<dynamic>.from(matcher);
-      copy.forEach((dynamic s) {
+      var copy = List<dynamic>.from(matcher);
+      for (var s in copy) {
         if (s is! String) {
-          throw new ArgumentError(
-              "unsupported type in iterable: ${s.runtimeType}");
+          throw ArgumentError("unsupported type in iterable: ${s.runtimeType}");
         }
-      });
+      }
       return copy.contains;
     }
-    throw new ArgumentError("unsupported type ${matcher.runtimeType}");
+    throw ArgumentError("unsupported type ${matcher.runtimeType}");
   }
 
   AttributeGenerator _attributeCopier(Matcher attributes, Filter when) =>

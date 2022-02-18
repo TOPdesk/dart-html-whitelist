@@ -7,27 +7,27 @@ import 'package:htmlwhitelist/htmlwhitelist.dart';
 /// Returns `true` if the given [tag] and [attributes] are accepted.
 ///
 /// [attributes] contains all attribute names and values of the source tag.
-typedef bool Filter(String tag, Map<String, String?> attributes);
+typedef Filter = bool Function(String tag, Map<String, String?> attributes);
 
 /// Returns `true` if the given [name] matches.
-typedef bool Matcher(String name);
+typedef Matcher = bool Function(String name);
 
 /// Uses the [collector] to generate attributes for the given [tag].
 ///
 /// [originalAttributes] contains all attribute names and values in the source
 /// tag. This makes it possible to create attributes and values based on
 /// the original tag.
-typedef void AttributeGenerator(String tag,
+typedef AttributeGenerator = void Function(String tag,
     Map<String, String> originalAttributes, AttributeCollector collector);
 
 /// Matches all tags.
-final Matcher anyTag = (t) => true;
+bool anyTag(String name) => true;
 
 /// Matches all attributes.
-final Matcher anyAttribute = (a) => true;
+bool anyAttribute(String name) => true;
 
 /// Always returns `true`.
-final Filter always = (t, a) => true;
+bool always(String tag, Map<String, String?> attributes) => true;
 
 /// Returns an AttributeGenerator that generates an attribute with the
 /// given [name] and [value].

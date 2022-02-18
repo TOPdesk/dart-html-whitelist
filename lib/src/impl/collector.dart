@@ -55,10 +55,10 @@ class Collector implements AttributeCollector {
 
   void _checkNameAndValue(String name, String value) {
     if (identical(name, null)) {
-      throw new ArgumentError('null name');
+      throw ArgumentError('null name');
     }
     if (identical(value, null)) {
-      throw new ArgumentError('null value');
+      throw ArgumentError('null value');
     }
   }
 }
